@@ -18,15 +18,14 @@ tabnak1.loc[0, "NewsTitrBrief"] = tfb.find('div', {'class': "lead2"}).text
 
 # News of second importance
 title_contents = soup_link.find('div', {'class': "service_content"})
-for i in range(1, 48):
-    try:
+for i in range(0, 48):
+    # try:
         content = title_contents.findAll('a', {'class': "title_main"})[i]
         tabnak2.loc[i, "NewsLink"] = 'http://www.tabnak.ir' + content.get('href')
         tabnak2.loc[i, "NewsTitr"] = content.get('title')
-        #tcb = soup_link.find('div', {'class': "box_election"})
-        tabnak1.loc[i, "NewsTitrBrief"] = title_contents.find('div', {'class': "lead1"}).text
-
-    except:
-             pass
-
-
+        tcb = soup_link.findAll('div', {'class': "lead1"})[i]
+        print(tcb.text)
+        tabnak1.loc[i, "NewsTitrBrief"] = tcb.text
+        print(i)
+    # except:
+    #          pass
