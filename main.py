@@ -32,20 +32,29 @@ for j in range(counter): # get paragraphs and put to DataFrame
     ac = tfl.findAll('p')[j]
     fullnews = fullnews + '\n' + ac.text
 Tabnak1.loc[0, "NewsText"] = fullnews
-print(Tabnak1.loc[0, "NewsText"] )
-
-# print(tfl.find('dev', {'class': "body"}))
-# Tabnak1.loc[0, "NewsGroup"]
-# Tabnak1.loc[0, "NewsGroupSub"]
-# Tabnak1.loc[0, "KeyWord"]
-# Tabnak1.loc[0, "ReleaseTimeNews"]
-# Tabnak1.loc[0, "ReleaseDateNews"]
-
-
-
-
-
-
+link2 = requests.get(url)
+titr1_link = BeautifulSoup(link2.text, 'html.parser')
+newsAA = titr1_link.find('div', {'id': "box-top-news"})
+news_path = newsAA.find('div', {'class': "news_path"}).text
+atest = news_path.split('»')
+Tabnak1.loc[0, "NewsGroup"] = atest[0]
+Tabnak1.loc[0, "NewsGroupSub"] = atest[1]
+# count tags
+tag_count = 0
+for k in titr1_link.findAll('a', {'class': "btn btn-primary-news"}):
+    if k:
+        tag_count = tag_count + 1
+# get Tags and put to DataFrame
+AllTags = ''
+for l in range(tag_count):
+    tags = titr1_link.findAll('a', {'class': "btn btn-primary-news"})[l]
+    AllTags = AllTags + '#' + tags.text
+Tabnak1.loc[0, "KeyWord"] = AllTags
+# get Date & Time
+news_time = titr1_link.find('div', {'class': "news_nav news_pdate_c"}).text
+fa_time = news_time.split('-')
+Tabnak1.loc[0, "ReleaseDateNews"] = fa_time[0].split(':')[1]
+Tabnak1.loc[0, "ReleaseTimeNews"] = fa_time[1].split()[0]
 
 
 # News of second importance
@@ -65,7 +74,6 @@ for i in range(0, 48):
 
     except:
              pass
-
 
 
 
