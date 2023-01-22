@@ -10,9 +10,6 @@ Tabnak1 = pd.DataFrame()
 Tabnak2 = pd.DataFrame()
 Tabnak3 = pd.DataFrame()
 
-counterB = 0
-
-
 # Main Titr News
 title_first = soup_link.find('h3', {'class': "Htag title_elec"})
 aa = title_first.find('a')
@@ -77,6 +74,7 @@ for i in range(0, 48):
         bb = requests.get(t2l)[i]
         tcl = BeautifulSoup(bb.text, 'html.parser')[i]
 # count paragraphs
+        counterB = 0
         for k in tcl.findAll('p'):
             if k:
                 counterB = counterB + 1
