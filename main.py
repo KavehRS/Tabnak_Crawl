@@ -70,22 +70,21 @@ for i in range(0, 48):
         Tabnak2.loc[i, "NewsLink"] = t2l
         Tabnak2.loc[i, "NewsTitr"] = Content.get('title')
         Tcb = soup_link.findAll('div', {'class': "lead1"})
-        Tabnak2.loc[i, "NewsTitrBrief"] = Tcb.text
-        bb = requests.get(t2l)[i]
-        contentB = BeautifulSoup(bb.text, 'html.parser')[i]
+        Tabnak2.loc[i, "NewsTitrBrief"] = Tcb
+        bb = requests.get(t2l)
+        contentB = BeautifulSoup(bb.text, 'html.parser')
 # count paragraphs
         countB = 0
         for k in contentB.findAll('p'):
             if k:
                 countB = countB + 1
-        fullcontentB = ''
 # get paragraphs and put to DataFrame
-        for l in range(countB):
-            paragraphB = contentB.find('p')[l]
+        fullcontentB = ''
+        for d in range(countB):
+            paragraphB = contentB.findAll('p')[d]
             fullcontentB = fullcontentB + '\n' + paragraphB.text
             Tabnak2.loc[i, "NewsText"] = fullcontentB
-
-        pageB_link = BeautifulSoup(t2l.text, 'html.parser')[i]
+        pageB_link = BeautifulSoup(bb.text, 'html.parser')
     # GET NewsGroup
         NewsGroupB = pageB_link.find('div', {'class': "news_path"}).text
         sepA = NewsGroupB.split('»')
@@ -115,7 +114,7 @@ for i in range(0, 48):
 # last News
 Lnl = soup_link.find('div', {'id': "tab1_aa"})
 for i in range(1, 200):
-     try:
+      try:
         Lastnews = Lnl.findAll('a')[i]
         lastnews_link = 'http://www.tabnak.ir' + Lastnews.get('href')
         Tabnak3.loc[i, "NewsLink"] = lastnews_link
@@ -155,5 +154,5 @@ for i in range(1, 200):
         faL_time = contentL_time.split('-')
         Tabnak3.loc[i, "ReleaseDateNews"] = faL_time[0].split(':')[1]
         Tabnak3.loc[i, "ReleaseTimeNews"] = faL_time[1].split()[0]
-     except:
-               pass
+      except:
+                pass
