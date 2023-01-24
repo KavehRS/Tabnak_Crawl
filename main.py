@@ -114,12 +114,12 @@ for i in range(0, 48):
 # last News
 Lnl = soup_link.find('div', {'id': "tab1_aa"})
 for i in range(1, 200):
-      try:
+     # try:
         Lastnews = Lnl.findAll('a')[i]
         lastnews_link = 'http://www.tabnak.ir' + Lastnews.get('href')
         Tabnak3.loc[i, "NewsLink"] = lastnews_link
         Tabnak3.loc[i, "NewsTitr"] = Lastnews.get('title')
-        lastnews_content = BeautifulSoup(lastnews_link.text, 'html.parser')
+        lastnews_content = BeautifulSoup(lastnews_link, 'html.parser')
         lastnewBrief = lastnews_content.findAll('div', {'class': "subtitle"})
         Tabnak3.loc[i, "NewsTitrBrief"] = lastnewBrief.text
      # count paragraphs
@@ -130,7 +130,7 @@ for i in range(1, 200):
         fullLastnews = ''
      # get paragraphs and put to DataFrame
         for q in range(countC):
-            paragraphL  = lastnews_content.find('p')[q]
+            paragraphL  = lastnews_content.findAll('p')[q]
             fullLastnews = fullLastnews + '\n' + paragraphL.text
             Tabnak3.loc[i, "NewsText"] = fullLastnews
      # GET NewsGroup
@@ -138,7 +138,7 @@ for i in range(1, 200):
         sepL = NewsGroupL.split('»')
         Tabnak3.loc[i, "NewsGroup"] = sepL[0]
         Tabnak3.loc[0, "NewsGroupSub"] = sepL[1]
-     # count tags
+     count tags
         tagL_count = 0
         for u in lastnews_content.findAll('a', {'class': "btn btn-primary-news"}):
             if u:
@@ -154,5 +154,5 @@ for i in range(1, 200):
         faL_time = contentL_time.split('-')
         Tabnak3.loc[i, "ReleaseDateNews"] = faL_time[0].split(':')[1]
         Tabnak3.loc[i, "ReleaseTimeNews"] = faL_time[1].split()[0]
-      except:
-                pass
+     except:
+               pass
