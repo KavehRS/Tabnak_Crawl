@@ -6,9 +6,10 @@ import pandas as pd
 # Get Portal Data & Create DataFrame
 link = requests.get('https://www.tabnak.ir/')
 soup_link = BeautifulSoup(link.text, 'html.parser')
-Tabnak1 = pd.DataFrame()
-Tabnak2 = pd.DataFrame()
-Tabnak3 = pd.DataFrame()
+ColumnsName =['NewsLink', 'NewsTitr', 'NewsTitrBrief', 'NewsText', 'NewsGroup','NewsGroupSub','KeyWord','ReleaseDateNews', 'ReleaseTimeNews']
+Tabnak1 = pd.DataFrame(columns = ColumnsName, dtype=object)
+Tabnak2 = pd.DataFrame(columns = ColumnsName, dtype=object)
+Tabnak3 = pd.DataFrame(columns = ColumnsName, dtype=object)
 
 # Main Titr News
 title_first = soup_link.find('h3', {'class': "Htag title_elec"})
@@ -69,8 +70,8 @@ for i in range(0, 48):
         t2l = 'http://www.tabnak.ir' + Content.get('href')
         Tabnak2.loc[i, "NewsLink"] = t2l
         Tabnak2.loc[i, "NewsTitr"] = Content.get('title')
-        Tcb = soup_link.findAll('div', {'class': "lead1"})
-        Tabnak2.loc[i, "NewsTitrBrief"] = Tcb
+        Tcb = soup_link.findAll('div', {'class': "lead1"})[i]
+        Tabnak2.loc[i, "NewsTitrBrief"] = Tcb.text
         bb = requests.get(t2l)
         contentB = BeautifulSoup(bb.text, 'html.parser')
 # count paragraphs
@@ -83,13 +84,13 @@ for i in range(0, 48):
         for d in range(countB):
             paragraphB = contentB.findAll('p')[d]
             fullcontentB = fullcontentB + '\n' + paragraphB.text
-            Tabnak2.loc[i, "NewsText"] = fullcontentB
+        Tabnak2.loc[i, "NewsText"] = fullcontentB
         pageB_link = BeautifulSoup(bb.text, 'html.parser')
     # GET NewsGroup
         NewsGroupB = pageB_link.find('div', {'class': "news_path"}).text
         sepA = NewsGroupB.split('»')
         Tabnak2.loc[i, "NewsGroup"] =sepA[0]
-        Tabnak2.loc[0, "NewsGroupSub"] = sepA[1]
+        Tabnak2.loc[i, "NewsGroupSub"] = sepA[1]
 # count tags
         tagB_count = 0
         for m in pageB_link.findAll('a', {'class': "btn btn-primary-news"}):
@@ -110,6 +111,10 @@ for i in range(0, 48):
 
     except:
         pass
+
+
+
+
 ##############################################################################################
 # last News
 Lnl = soup_link.find('div', {'id': "tab1_aa"})
@@ -120,7 +125,7 @@ for i in range(1, 200):
         Tabnak3.loc[i, "NewsLink"] = lastnews_link
         Tabnak3.loc[i, "NewsTitr"] = Lastnews.get('title')
         lastnews_content = BeautifulSoup(lastnews_link, 'html.parser')
-        lastnewBrief = lastnews_content.findAll('div', {'class': "subtitle"})
+        lastnewBrief = lastnews_content.findAll('div', {'class': "subtitle"})[i]
         Tabnak3.loc[i, "NewsTitrBrief"] = lastnewBrief.text
      # count paragraphs
         countC = 0
@@ -138,7 +143,7 @@ for i in range(1, 200):
         sepL = NewsGroupL.split('»')
         Tabnak3.loc[i, "NewsGroup"] = sepL[0]
         Tabnak3.loc[0, "NewsGroupSub"] = sepL[1]
-     count tags
+    #count tags
         tagL_count = 0
         for u in lastnews_content.findAll('a', {'class': "btn btn-primary-news"}):
             if u:
@@ -154,5 +159,8 @@ for i in range(1, 200):
         faL_time = contentL_time.split('-')
         Tabnak3.loc[i, "ReleaseDateNews"] = faL_time[0].split(':')[1]
         Tabnak3.loc[i, "ReleaseTimeNews"] = faL_time[1].split()[0]
-     except:
-               pass
+        # except:
+        #      pass
+Tabnak_Total = pd.DataFrame(columns = ColumnsName, dtype=object)
+
+Tabnak_Total = Tabnak1.append([Tabnak2, Tabnak3])
