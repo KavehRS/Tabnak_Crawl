@@ -161,6 +161,5 @@ for i in range(1, 200):
         Tabnak3.loc[i, "ReleaseTimeNews"] = faL_time[1].split()[0]
         # except:
         #      pass
-Tabnak_Total = pd.DataFrame(columns = ColumnsName, dtype=object)
 
 Tabnak_Total = Tabnak1.append([Tabnak2, Tabnak3])
