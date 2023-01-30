@@ -11,6 +11,7 @@ ColumnsName =['NewsLink', 'NewsTitr', 'NewsTitrBrief', 'NewsText', 'NewsGroup','
 Tabnak1 = pd.DataFrame(columns = ColumnsName, dtype=object)
 Tabnak2 = pd.DataFrame(columns = ColumnsName, dtype=object)
 Tabnak3 = pd.DataFrame(columns = ColumnsName, dtype=object)
+Tabnak_Total = pd.DataFrame(columns = ColumnsName, dtype=object)
 
 # Main Titr News
 title_first = soup_link.find('h3', {'class': "Htag title_elec"})
@@ -129,50 +130,59 @@ for i in range(1, 150):
         Tabnak3.loc[i, "NewsTitrBrief"] = lastnewBrief.text
     except:
         pass
-
 # count paragraphs
-        countC = 0
-        for p in lastnews_content.findAll('p'):
-            if p:
-                countC = countC + 1
-        fullLastnews = ''
+    countC = 0
+    for p in lastnews_content.findAll('p'):
+        if p:
+            countC = countC + 1
+
 # get paragraphs and put to DataFrame
-        for q in range(countC):
-            paragraphL  = lastnews_content.findAll('p')[q]
-            fullLastnews = fullLastnews + '\n' + paragraphL.text
-            Tabnak3.loc[i, "NewsText"] = fullLastnews
-# GET NewsGroup
+    fullLastnews = ''
+    lastnews_text = lastnews_content.find('div', {'class': "body"})
+
+    for z in range(countC):
         try:
-            NewsGroupL = lastnews_content.find('div', {'class': "news_path"}).text
-            sepL = NewsGroupL.split('»')
-            Tabnak3.loc[i, "NewsGroup"] = sepL[0]
-            Tabnak3.loc[0, "NewsGroupSub"] = sepL[1]
+            paragraphL  = lastnews_text.findAll('p')[z]
+            fullLastnews = fullLastnews + '\n' + paragraphL.text
         except:
             pass
+    Tabnak3.loc[i, "NewsText"] = fullLastnews
+# GET NewsGroup
+    try:
+        NewsGroupC = lastnews_text.find('div', {'class': "news_path"})
+        NGtext = NewsGroupC.text
+        sepC = NGtext.split('»')
+        Tabnak3.loc[i, "NewsGroup"] =sepC[0]
+        Tabnak3.loc[i, "NewsGroupSub"] = sepC[1]
+    except:
+        pass
 
 #count tags
-        tagL_count = 0
-        for u in lastnews_content.findAll('a', {'class': "btn btn-primary-news"}):
-            if u:
-                tagL_count = tagL_count + 1
+    tagL_count = 0
+    for u in lastnews_content.findAll('a', {'class': "btn btn-primary-news"}):
+        if u:
+            tagL_count = tagL_count + 1
 # get Tags and put to DataFrame
-        try:
-            AllTagL = ''
-            for w in range(tagL_count):
-                tagL = lastnews_content.findAll('a', {'class': "btn btn-primary-news"})[w]
-                AllTagBs = AllTagL + '#' + tagL.text
-            Tabnak3.loc[i, "KeyWord"] = AllTagL
-        except:
-            pass
+    try:
+        AllTagL = ''
+        for w in range(tagL_count):
+            tagL = lastnews_content.findAll('a', {'class': "btn btn-primary-news"})[w]
+            AllTagBs = AllTagL + '#' + tagL.text
+        Tabnak3.loc[i, "KeyWord"] = AllTagBs
+    except:
+        pass
 # get Date & Time
-        try:
-            contentL_time = lastnews_content.find('div', {'class': "news_nav news_pdate_c"}).text
-            faL_time = contentL_time.split('-')
-            Tabnak3.loc[i, "ReleaseDateNews"] = faL_time[0].split(':')[1]
-            Tabnak3.loc[i, "ReleaseTimeNews"] = faL_time[1].split()[0]
-        except:
-               pass
-Tabnak_Total = pd.DataFrame(columns = ColumnsName, dtype=object)
+    try:
+        contentL_time = lastnews_content.find('div', {'class': "news_nav news_pdate_c"}).text
+        faL_time = contentL_time.split('-')
+        Tabnak3.loc[i, "ReleaseDateNews"] = faL_time[0].split(':')[1]
+        Tabnak3.loc[i, "ReleaseTimeNews"] = faL_time[1].split()[0]
+    except:
+            pass
+
+
+############################################################################################
+# Total News
 
 Tabnak_Total = Tabnak1.append([Tabnak2, Tabnak3])
 
