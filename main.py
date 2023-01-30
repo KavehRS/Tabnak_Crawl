@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
+
 # Get Portal Data & Create DataFrame
 link = requests.get('https://www.tabnak.ir/')
 soup_link = BeautifulSoup(link.text, 'html.parser')
@@ -112,54 +113,66 @@ for i in range(0, 48):
     except:
         pass
 
-
-
-
 ##############################################################################################
 # last News
 Lnl = soup_link.find('div', {'id': "tab1_aa"})
-for i in range(1, 200):
-     # try:
-        Lastnews = Lnl.findAll('a')[i]
-        lastnews_link = 'http://www.tabnak.ir' + Lastnews.get('href')
-        Tabnak3.loc[i, "NewsLink"] = lastnews_link
-        Tabnak3.loc[i, "NewsTitr"] = Lastnews.get('title')
-        lastnews_content = BeautifulSoup(lastnews_link, 'html.parser')
-        lastnewBrief = lastnews_content.findAll('div', {'class': "subtitle"})[i]
+for i in range(1, 150):
+    Lastnews = Lnl.findAll('a')[i]
+    lastnews_link = 'http://www.tabnak.ir' + Lastnews.get('href')
+    lastnews_link2 = requests.get(lastnews_link)
+    Tabnak3.loc[i, "NewsLink"] = lastnews_link
+    Tabnak3.loc[i, "NewsTitr"] = Lastnews.get('title')
+# get NewsTitrBrief
+    lastnews_content = BeautifulSoup(lastnews_link2.text, 'html.parser')
+    lastnewBrief = lastnews_content.find('div', {'class': "subtitle"})
+    try:
         Tabnak3.loc[i, "NewsTitrBrief"] = lastnewBrief.text
-     # count paragraphs
+    except:
+        pass
+
+# count paragraphs
         countC = 0
         for p in lastnews_content.findAll('p'):
             if p:
                 countC = countC + 1
         fullLastnews = ''
-     # get paragraphs and put to DataFrame
+# get paragraphs and put to DataFrame
         for q in range(countC):
             paragraphL  = lastnews_content.findAll('p')[q]
             fullLastnews = fullLastnews + '\n' + paragraphL.text
             Tabnak3.loc[i, "NewsText"] = fullLastnews
-     # GET NewsGroup
-        NewsGroupL = lastnews_content.find('div', {'class': "news_path"}).text
-        sepL = NewsGroupL.split('»')
-        Tabnak3.loc[i, "NewsGroup"] = sepL[0]
-        Tabnak3.loc[0, "NewsGroupSub"] = sepL[1]
-    #count tags
+# GET NewsGroup
+        try:
+            NewsGroupL = lastnews_content.find('div', {'class': "news_path"}).text
+            sepL = NewsGroupL.split('»')
+            Tabnak3.loc[i, "NewsGroup"] = sepL[0]
+            Tabnak3.loc[0, "NewsGroupSub"] = sepL[1]
+        except:
+            pass
+
+#count tags
         tagL_count = 0
         for u in lastnews_content.findAll('a', {'class': "btn btn-primary-news"}):
             if u:
                 tagL_count = tagL_count + 1
-    # get Tags and put to DataFrame
-        AllTagL = ''
-        for w in range(tagL_count):
-            tagL = lastnews_content.findAll('a', {'class': "btn btn-primary-news"})[w]
-            AllTagBs = AllTagL + '#' + tagL.text
-        Tabnak3.loc[i, "KeyWord"] = AllTagL
-     # get Date & Time
-        contentL_time = lastnews_content.find('div', {'class': "news_nav news_pdate_c"}).text
-        faL_time = contentL_time.split('-')
-        Tabnak3.loc[i, "ReleaseDateNews"] = faL_time[0].split(':')[1]
-        Tabnak3.loc[i, "ReleaseTimeNews"] = faL_time[1].split()[0]
-        # except:
-        #      pass
+# get Tags and put to DataFrame
+        try:
+            AllTagL = ''
+            for w in range(tagL_count):
+                tagL = lastnews_content.findAll('a', {'class': "btn btn-primary-news"})[w]
+                AllTagBs = AllTagL + '#' + tagL.text
+            Tabnak3.loc[i, "KeyWord"] = AllTagL
+        except:
+            pass
+# get Date & Time
+        try:
+            contentL_time = lastnews_content.find('div', {'class': "news_nav news_pdate_c"}).text
+            faL_time = contentL_time.split('-')
+            Tabnak3.loc[i, "ReleaseDateNews"] = faL_time[0].split(':')[1]
+            Tabnak3.loc[i, "ReleaseTimeNews"] = faL_time[1].split()[0]
+        except:
+               pass
+Tabnak_Total = pd.DataFrame(columns = ColumnsName, dtype=object)
 
 Tabnak_Total = Tabnak1.append([Tabnak2, Tabnak3])
+
